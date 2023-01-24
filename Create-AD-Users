@@ -1,0 +1,17 @@
+#Prompt for required information
+$username = Read-Host "Enter the username"
+$password = Read-Host "Enter the password" -AsSecureString
+$firstname = Read-Host "Enter the first name"
+$lastname = Read-Host "Enter the last name"
+$displayname = Read-Host "Enter the display name EX. Last, First MI. Department Organization"
+
+
+#Check if the username already exists
+$userExists = Get-ADUser -Filter {samAccountName -eq $username}
+if ($userExists) {
+Write-Host "The username already exists. Please enter a different username."
+} else {
+
+# Create the AD user account
+New-ADUser -SamAccountName $username -DisplayName $displayname -GivenName $firstname -Surname $lastname -EmailAddress $email -AccountPassword $password -Enabled $true -SmartcardLogonRequired $true }
+
