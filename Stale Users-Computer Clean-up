@@ -1,0 +1,35 @@
+IImport-Module ActiveDirectory
+
+$OU = "OU=Inactive Users,DC=example,DC=com"
+$InactiveDays = 60
+$date = (Get-Date).AddDays(-$InactiveDays)
+$file = "C:\InactiveUsers.csv"
+
+$Users = Get-ADUser -Filter {LastLogon -lt $date} -SearchBase $OU -Properties Name,LastLogon
+
+$Users | Select-Object Name,LastLogon | Export-Csv $file -NoTypeInformation
+
+Foreach ($User in $Users) {
+    Disable-ADAccount -Identity $User
+    Move-ADObject -Identity $User -TargetPath "OU=Disabled Users,DC=example,DC=com"
+    Write-Host "User $($User.Name) has been disabled and moved to the Disabled Users OU."
+}
+
+
+Import-Module ActiveDirectory
+
+$OU = "OU=Inactive Computers,DC=example,DC=com"
+$InactiveDays = 60
+$date = (Get-Date).AddDays(-$InactiveDays)
+$file = "C:\InactiveComputers.csv"
+
+$Computers = Get-ADComputer -Filter {LastLogonTimestamp -lt $date} -SearchBase $OU -Properties Name,LastLogonTimestamp
+
+$Computers | Select-Object Name,LastLogonTimestamp | Export-Csv $file -NoTypeInformation
+
+Foreach ($Computer in $Computers) {
+    Disable-ADAccount -Identity $Computer
+    Move-ADObject -Identity $Computer -TargetPath "OU=Disabled Computers,DC=example,DC=com"
+    Write-Host "Computer $($Computer.Name) has been disabled and moved to the Disabled Computers OU."
+}
+
