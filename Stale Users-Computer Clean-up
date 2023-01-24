@@ -1,4 +1,4 @@
-IImport-Module ActiveDirectory
+Import-Module ActiveDirectory
 
 $OU = "OU=Inactive Users,DC=example,DC=com"
 $InactiveDays = 60
